@@ -53,7 +53,7 @@ int main() {
                 std::cout << " Okay, make sure to enter a MD5 hash." << std::endl;
             }else{
                 std::cout << " Please input either 1 or 2" << std::endl;
-                break;
+                continue;
             }
 
             std::cout << "Please enter a hash you'd like to try!" << std::endl;
