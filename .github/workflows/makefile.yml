@@ -12,21 +12,25 @@ jobs:
     container:
       image: gcc:12
     steps:
+      - name: Install distro dev packages (if needed)
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            git build-essential make libssl-dev libboost-all-dev cmake pkg-config ca-certificates
+          # remove apt cache to keep the container clean
+          rm -rf /var/lib/apt/lists/*
+
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Show environment
         run: |
           uname -a
+          which git || true
+          git --version || true
           gcc --version
           g++ --version
           make --version
 
-      - name: Install distro dev packages (if needed)
-        run: |
-          apt-get update
-          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-            libssl-dev libboost-all-dev cmake pkg-config
-        # remove the apt cache to keep runner clean
       - name: Build
         run: make -j$(nproc)
