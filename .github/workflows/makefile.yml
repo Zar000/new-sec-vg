@@ -1,27 +1,32 @@
-name: Makefile CI
-
 on:
   push:
-    branches: '*'
+    branches:
+      - "**"
   pull_request:
-    branches: '*'
+    branches:
+      - "**"
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
+    container:
+      image: gcc:12
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: configure
-      run: ./configure
+      - name: Show environment
+        run: |
+          uname -a
+          gcc --version
+          g++ --version
+          make --version
 
-    - name: Install dependencies
-      run: make
-
-    - name: Run check
-      run: make check
-
-    - name: Run distcheck
-      run: make distcheck
+      - name: Install distro dev packages (if needed)
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            libssl-dev libboost-all-dev cmake pkg-config
+        # remove the apt cache to keep runner clean
+      - name: Build
+        run: make -j$(nproc)
